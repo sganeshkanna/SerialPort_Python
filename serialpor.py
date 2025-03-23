@@ -74,7 +74,6 @@ while 1:
             # time.sleep(3)
             # print('Sending current mm')
             # serialPort.write(serial.to_bytes(current_mm))
-
             # time.sleep(3)
             # print('Sending process complete')
             # serialPort.write(serial.to_bytes(process_complete))
