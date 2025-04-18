@@ -36,6 +36,7 @@ serialPort = serial.Serial(
     port="COM10", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
 )
 
+serialPort.write(serial.to_bytes(ready))
 
 convert()
 
