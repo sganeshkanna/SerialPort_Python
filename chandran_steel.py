@@ -34,16 +34,22 @@ warning_data = [0x24, 0x80, 0x00, 0x05, 0x06, 0x01, 0x45, 0x52, 0x52, 0x4F, 0x52
 remove_warning_data = [0x24, 0x80, 0x00, 0x05, 0x06, 0x02, 0x45, 0x52, 0x52, 0x4F, 0x52, 0x81, 0x23]
 
 
-def convert():
-    line = '248000140103496E697469616C697A6174696F6E8123'
-    n = 2
-    print(['0x'+line[i:i + n] for i in range(0, len(line), n)])
-
 serialPort = serial.Serial(
     port="COM10", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
 )
 
+# print('Sending ready')
 # serialPort.write(serial.to_bytes(ready))
+# time.sleep(2)
+print('Sending warning ')
+serialPort.write(serial.to_bytes(warning_data))
+time.sleep(15)
+print('Sending warning clear')
+serialPort.write(serial.to_bytes(remove_warning_data))
+# time.sleep(1)
+# print('Sending warning ')
+# serialPort.write(serial.to_bytes(warning_data))
+# # serialPort.write(serial.to_bytes(ready))
 # time.sleep(60)
 # print('Sending warning ')
 # serialPort.write(serial.to_bytes(warning_data))
@@ -55,7 +61,12 @@ serialPort = serial.Serial(
 # serialPort.write(serial.to_bytes(error_data))
 
 
-convert()
+# def convert():
+#     line = '248000140103496E697469616C697A6174696F6E8123'
+#     n = 2
+#     print(['0x'+line[i:i + n] for i in range(0, len(line), n)])
+
+# convert()
 
 
 serialString = ""  # Used to hold data coming over UART
@@ -78,16 +89,21 @@ while 1:
 
         elif(serialString.__contains__(b'HANDSHAKE')):
             print('Sending ACK')
+            # time.sleep(60)
             serialPort.write(serial.to_bytes(ack))
             time.sleep(3)
             print('Sending version')
             serialPort.write(serial.to_bytes(version))
-            # time.sleep(3)
+            time.sleep(3)
             # print('Sending initialization')
             # serialPort.write(serial.to_bytes(initialization_String))
-            time.sleep(3)
             print('Sending ready')
             serialPort.write(serial.to_bytes(ready))
+            time.sleep(1)
+            # print('Sending warning ')
+            # serialPort.write(serial.to_bytes(warning_data))
+
+
         elif (serialString.__contains__(b'|7:1')):
             print('Sending setting ack')
             serialPort.write(serial.to_bytes(setting_ack))
@@ -98,8 +114,12 @@ while 1:
             print('Sending recepp ack')
             serialPort.write(serial.to_bytes(receipt_ack))
             time.sleep(3)
+            print('Sending warning ')
+            serialPort.write(serial.to_bytes(warning_data))
+            time.sleep(2)
             print('Sending ready')
             serialPort.write(serial.to_bytes(ready))
+
             # time.sleep(3)
             # print('Sending current mm')
             # serialPort.write(serial.to_bytes(current_mm))
@@ -137,25 +157,25 @@ while 1:
             print('Sending calibration done ')
             serialPort.write(serial.to_bytes(calibration_done))
         elif (serialString.__contains__(b'START')):
-            time.sleep(30)
-            print('Sending steam on')
-            serialPort.write(serial.to_bytes(steam_on))
-            time.sleep(30)
-            print('Sending steam off')
-            serialPort.write(serial.to_bytes(steam_off))
-            time.sleep(30)
-            print('Sending heat on')
-            serialPort.write(serial.to_bytes(heat_on))
-            time.sleep(30)
-            print('Sending heat off')
-            serialPort.write(serial.to_bytes(heat_off))
-
+            time.sleep(10)
+            # print('Sending steam on')
+            # serialPort.write(serial.to_bytes(steam_on))
+            # time.sleep(30)
+            # print('Sending steam off')
+            # serialPort.write(serial.to_bytes(steam_off))
+            # time.sleep(30)
+            # print('Sending heat on')
+            # serialPort.write(serial.to_bytes(heat_on))
+            # time.sleep(30)
+            # print('Sending heat off')
+            # serialPort.write(serial.to_bytes(heat_off))
+            #
             # print('Sending warning ')
             # serialPort.write(serial.to_bytes(warning_data))
-            # time.sleep(30)
+            # time.sleep(60)
             # print('Sending warning clear')
             # serialPort.write(serial.to_bytes(remove_warning_data))
-            # time.sleep(5)
+            # # time.sleep(5)
             # print('Sending Error ')
             # serialPort.write(serial.to_bytes(error_data))
         

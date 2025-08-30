@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serial Port Controller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #2a2a4c;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        .btn {
+            background-color: #4a4a8c;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #5a5a9e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .status-bar {
+            background-color: #3b3b5e;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        .status-connected {
+            background-color: #38a169;
+        }
+        .status-disconnected {
+            background-color: #e53e3e;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+
+    <div class="container px-4">
+        <div class="card bg-gray-800">
+            <h1 class="text-3xl font-bold mb-4 text-center">Serial Port Controller</h1>
+            <p class="text-gray-400 mb-6 text-center">
+                Use the buttons below to send commands to your serial device. The page status indicates the server's connection to the serial port.
+            </p>
+
+            <!-- Status Bar -->
+            <div id="status" class="status-bar mb-6">
+                <span id="status-text">Checking...</span>
+            </div>
+
+            <!-- Command Buttons -->
+            <div class="btn-group">
+                <button class="btn" onclick="sendCommand('ACK')">ACK</button>
+                <button class="btn" onclick="sendCommand('Version')">Version</button>
+                <button class="btn" onclick="sendCommand('Initialization String')">Initialization String</button>
+                <button class="btn" onclick="sendCommand('Ready')">Ready</button>
+                <button class="btn" onclick="sendCommand('Setting ACK')">Setting ACK</button>
+                <button class="btn" onclick="sendCommand('Machine Ready ACK')">Machine Ready ACK</button>
+                <button class="btn" onclick="sendCommand('REQ')">REQ</button>
+                <button class="btn" onclick="sendCommand('Receipt ACK')">Receipt ACK</button>
+                <button class="btn" onclick="sendCommand('Current MM')">Current MM</button>
+                <button class="btn" onclick="sendCommand('Current Passage')">Current Passage</button>
+                <button class="btn" onclick="sendCommand('Process Complete')">Process Complete</button>
+                <button class="btn" onclick="sendCommand('Cancel ACK')">Cancel ACK</button>
+                <button class="btn" onclick="sendCommand('Reset ACK')">Reset ACK</button>
+                <button class="btn" onclick="sendCommand('Reset Complete')">Reset Complete</button>
+                <button class="btn" onclick="sendCommand('Exponential ACK')">Exponential ACK</button>
+                <button class="btn" onclick="sendCommand('Exponential Data')">Exponential Data</button>
+                <button class="btn" onclick="sendCommand('Exit ACK')">Exit ACK</button>
+                <button class="btn" onclick="sendCommand('Start ACK')">Start ACK</button>
+                <button class="btn" onclick="sendCommand('Home Brew Off')">Home Brew Off</button>
+                <button class="btn" onclick="sendCommand('Input Test')">Input Test</button>
+                <button class="btn" onclick="sendCommand('Calibration Done')">Calibration Done</button>
+                <button class="btn" onclick="sendCommand('Heat On')">Heat On</button>
+                <button class="btn" onclick="sendCommand('Heat Off')">Heat Off</button>
+                <button class="btn" onclick="sendCommand('Steam On')">Steam On</button>
+                <button class="btn" onclick="sendCommand('Steam Off')">Steam Off</button>
+                <button class="btn" onclick="sendCommand('Error Data')">Error Data</button>
+                <button class="btn" onclick="sendCommand('Warning Data')">Warning Data</button>
+                <button class="btn" onclick="sendCommand('Remove Warning Data')">Remove Warning Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use the correct server URL
+        const SERVER_URL = 'http://127.0.0.1:5000';
+        const statusEl = document.getElementById('status');
+        const statusTextEl = document.getElementById('status-text');
+
+        // Function to check the server status
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${SERVER_URL}/status`);
+                const data = await response.json();
+                statusTextEl.textContent = data.status;
+                if (data.status === 'Connected') {
+                    statusEl.classList.remove('status-disconnected');
+                    statusEl.classList.add('status-connected');
+                } else {
+                    statusEl.classList.remove('status-connected');
+                    statusEl.classList.add('status-disconnected');
+                }
+            } catch (error) {
+                console.error("Could not connect to the server:", error);
+                statusTextEl.textContent = "Server down";
+                statusEl.classList.remove('status-connected');
+                statusEl.classList.add('status-disconnected');
+            }
+        }
+
+        // Function to send a command to the server
+        async function sendCommand(commandName) {
+            console.log(`Sending command: ${commandName}`);
+            try {
+                // The URL is built dynamically using the commandName
+                const response = await fetch(`${SERVER_URL}/send_command/${encodeURIComponent(commandName)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                console.log(data);
+                if (data.success) {
+<!--                    alert(`Success: ${data.message}`);-->
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                console.error("Failed to send command:", error);
+                alert("Failed to send command. Is the server running?");
+            }
+        }
+
+        // Check the server status every 5 seconds
+        setInterval(checkStatus, 5000);
+
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', checkStatus);
+    </script>
+</body>
+</html>
